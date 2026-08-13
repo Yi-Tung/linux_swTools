@@ -1,0 +1,13 @@
+<type>(<scope>): <subject>
+
+<describe>
+
+
+##==========================================================================##
+## type  : build, docs, chore, refactor, style, feat, fix, test, ci, revert ##
+## scope : build, docs, configs, include, lib, src, tests, <others>         ##
+##--------------------------------------------------------------------------##
+## subject  : starts with a lowercase letter, no period at the end          ##
+## describe : explain 'why' and 'what' (optional)                           ##
+##==========================================================================##
+
