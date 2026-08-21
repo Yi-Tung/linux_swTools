@@ -3,6 +3,7 @@ include macro.mk
 GCC := cc
 CFLAGS := -std=c11 -Werror
 LDFLAGS := 
+platform := $(shell uname -s)
 
 main_target := exe
 test_target := test
@@ -12,7 +13,12 @@ main_c := src/main.c
 lib_c := $(shell find lib -name "*.c" 2>/dev/null)
 
 ifeq ($(build_mode),release)
-  CFLAGS += -O2
+  CFLAGS += -O2 -ffunction-sections -fdata-sections
+  ifeq ($(platform),Darwin)
+    LDFLAGS += -Wl,-dead_strip
+  else ifeq ($(platform),Linux)
+    LDFLAGS += -Wl,--gc-sections
+  endif
   target := $(main_target)
   main_c := $(build_main_c)
   $(eval $(call add_define_int,mk_debug_switch,0))
