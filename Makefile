@@ -1,7 +1,7 @@
 include macro.mk
 
 GCC := cc
-CFLAGS := -std=c11 -Werror
+CFLAGS := -std=c11 -Werror -MMD
 LDFLAGS := 
 platform := $(shell uname -s)
 
@@ -39,6 +39,7 @@ endif
 
 src_c := $(main_c) $(lib_c)
 src_o := $(patsubst %.c,%.o,$(src_c))
+src_d := $(patsubst %.c,%.d,$(src_c))
 
 ifneq ($(build_configs_path),)
   $(eval $(call add_define_string,mk_configs_path,$(build_configs_path)))
@@ -53,12 +54,15 @@ $(target): $(src_o)
 %.o: %.c
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+-include $(src_d)
+
 
 .PHONY: clean_all clean
 
 clean_all:
 	@rm -rf $(main_target) $(test_target) bin \
-    $(shell find . -name "*.o" 2>/dev/null)
+    $(shell find . -name "*.o" 2>/dev/null) \
+    $(shell find . -name "*.d" 2>/dev/null)
 
 clean:
-	@find . -name "*.o" -delete
+	@find . \( -name "*.o" -o -name "*.d" \) -delete
