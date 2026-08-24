@@ -32,6 +32,8 @@ esac
 make clean
 mkdir -p bin
 
+echo -e "\033[97;42m============Ready to start building============\033[0m"
+
 for build_main_c in $all_main_c
 do
   export build_mode="${build_mode}"
@@ -62,10 +64,10 @@ fi
 
 if [ $is_build_success -eq 1 ]
 then
-  echo "============Build Success============"
+  echo -e "\033[97;42m================Build Successful===============\033[0m"
 elif [ $is_build_success -eq 0 ]
 then
-  echo "============Build Fail============"
+  echo -e "\033[97;41m==================Build Failed=================\033[0m"
 fi
 
 exit $((is_build_success == 1 ? 0:1))
