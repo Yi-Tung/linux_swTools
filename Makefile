@@ -1,8 +1,9 @@
 include macro.mk
 
 GCC := cc
-CFLAGS := -std=c11 -Werror -MMD
-LDFLAGS := 
+CFLAGS := -std=c11 -Werror -MMD -pthread
+LDFLAGS := -pthread
+LDLIBS := 
 platform := $(shell uname -s)
 
 main_target := exe
@@ -11,6 +12,7 @@ target := $(main_target)
 
 main_c := src/main.c
 lib_c := $(shell find lib -name "*.c" 2>/dev/null)
+pkg_packages := libconfig
 
 ifeq ($(build_mode),release)
   CFLAGS += -O2 -ffunction-sections -fdata-sections
@@ -37,6 +39,13 @@ else
   main_c := src/main.c
 endif
 
+$(eval $(call check_pkg_config))
+$(eval $(call check_pkg_packages,$(pkg_packages)))
+
+CFLAGS += $(shell pkg-config --cflags $(pkg_packages))
+LDFLAGS += $(shell pkg-config --libs-only-L $(pkg_packages))
+LDLIBS += $(shell pkg-config --libs-only-l $(pkg_packages))
+
 src_c := $(main_c) $(lib_c)
 src_o := $(patsubst %.c,%.o,$(src_c))
 src_d := $(patsubst %.c,%.d,$(src_c))
@@ -49,7 +58,7 @@ $(eval $(call add_include_path,include))
 
 
 $(target): $(src_o)
-	$(GCC) $(LDFLAGS) -o $(target) $(src_o)
+	$(GCC) $(LDFLAGS) -o $(target) $(src_o) $(LDLIBS)
 
 %.o: %.c
 	$(GCC) $(CFLAGS) -c $< -o $@
